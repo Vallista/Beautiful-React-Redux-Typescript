@@ -1,13 +1,14 @@
 import { useSelector, useDispatch } from 'react-redux'
-import * as actions from '../../store/reducers'
 import { RootState } from '../../store'
+
+import Employee from '../../store/modules/employee'
 
 function useEmployee() {
   const dispatch = useDispatch()
-  const employeeState = useSelector((store: RootState) => store.employees)
+  const employeeState = useSelector((store: RootState) => store.employee.employees)
 
   const fetchEmployees = () => {
-    dispatch(actions.fetchEmployees.request(''))
+    dispatch(Employee.actions.fetchEmployees.request(''))
   }
 
   return {
