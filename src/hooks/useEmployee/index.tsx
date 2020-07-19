@@ -1,7 +1,7 @@
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '../../store'
 
-import Employee from '../../store/modules/employee'
+import Employee from '../../store/modules/employee2'
 
 function useEmployee() {
   const dispatch = useDispatch()
