@@ -151,7 +151,7 @@ export default {
 }
 ```
 
-index.ts combines reducers and saga, and registers actions for external use. Let's see how you convert these modules to rootReducher and rootSagas.
+index.ts combines reducers and saga, and registers actions for external use. Let's see how you convert these modules to rootReducer and rootSagas.
 
 **modules/index.ts**
 
@@ -213,4 +213,4 @@ const Home: React.FC = () => {
 export default Home
 ```
 
-Likewise, hooks add useActivity like usEmployee and register the fetch event with usEffect.
+Likewise, hooks add useActivity like useEmployee and register the fetch event with useEffect.
