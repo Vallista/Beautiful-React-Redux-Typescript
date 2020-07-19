@@ -12,7 +12,6 @@ export interface IError {
   message: string
 }
 
-
 const fetchEmployees = (): Promise<IResponse> => {
   return fetch('http://dummy.restapiexample.com/api/v1/employees')
     .then(res => {
