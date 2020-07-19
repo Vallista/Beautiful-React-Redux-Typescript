@@ -52,7 +52,7 @@ There are many changes to the store. **The important thing is modularity**.
 
 **Module Structure**
 
-![2](https://github.com/Vallista/Beautiful-React-Redux-Typescript/blob/2.separation/screenshots/1.png?raw=true)
+![2](https://github.com/Vallista/Beautiful-React-Redux-Typescript/blob/2.modularization/screenshots/1.png?raw=true)
 
 Module consists of index.ts, reducer.ts, and saga.ts. After registering reducers and saga in index.ts, we will make a structure that applies to redsux without having to control it.
 
