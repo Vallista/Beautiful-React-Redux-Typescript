@@ -8,7 +8,7 @@ function useActivity() {
   const activities = useSelector((store: RootState) => store.activity.activities)
 
   const fetchActivities = () => {
-    dispatch(Activity.actions.fetchActivities.request(''))
+    dispatch(Activity.actions.fetch.request(''))
   }
 
   return {

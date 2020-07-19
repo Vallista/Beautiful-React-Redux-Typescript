@@ -1,9 +1,14 @@
 import React from 'react'
-import { IEmployee } from '../../apis/modules/employee'
 
-interface IProps extends IEmployee { }
+interface IProps {
+  id: string
+  employee_name: string
+  employee_salary: string
+  employee_age: string
+  profile_image: string
+}
 
-const Employee: React.FC<IProps> = ({ employee_name, employee_salary, employee_age, profile_image }: IEmployee) => (
+const Employee: React.FC<IProps> = ({ employee_name, employee_salary, employee_age, profile_image }: IProps) => (
   <div>
     <span>{employee_name}</span>
     <span>{employee_salary}</span>

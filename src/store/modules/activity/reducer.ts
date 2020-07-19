@@ -1,49 +1,28 @@
-import {
-  ActionType,
-  createReducer,
-  createAsyncAction
-} from 'typesafe-actions'
+import { createAsyncAction, createActionEntity, createCustomReducer } from '../../lib'
+import { IRequest, IError } from '../../../apis/modules/activity'
 
-import { IActivity } from '../../../apis/modules/activity';
-
-export const FETCH_ACTIVITIES = {
-  REQUEST: 'FETCH_ACTIVITIES_REQUEST',
-  SUCCESS: 'FETCH_ACTIVITIES_SUCCESS',
-  FAILURE: 'FETCH_ACTIVITIES_FAILURE'
+export interface IActivity {
+  ID: number
+  Title: string
+  DueDate: string
+  Completed: boolean
 }
 
-interface IRequest {
+const FETCH = createAsyncAction('activity/FETCH')
+export const fetch = createActionEntity<IRequest, IActivity[], IError>(FETCH)
 
-}
+const actions = { fetch }
+const state = { activities: [] as IActivity[], message: '' }
 
-interface IResponse {
-  activities: IActivity[]
-}
-
-interface IError {
-  message: string
-}
-
-export const fetchActivities = createAsyncAction(FETCH_ACTIVITIES.REQUEST, FETCH_ACTIVITIES.SUCCESS, FETCH_ACTIVITIES.FAILURE)<IRequest, IResponse, IError>()
-
-const actions = {
-  fetchActivities
-}
-
-type Actions = ActionType<typeof actions>
-type State = { activities: IActivity[], message: string }
-
-const initialState: State = { activities: [], message: '' }
-
-const reducer = createReducer<State, Actions>(initialState)
-  .handleAction(fetchActivities.success, (state, action) => {
-    return { ...state, activities: action.payload.activities }
+const reducer = createCustomReducer(
+  state,
+  actions
+)
+  .handleAction(fetch.success, (state, action) => {
+    return { ...state, activities: action.payload }
   })
-  .handleAction(fetchActivities.failure, (state, action) => {
+  .handleAction(fetch.failure, (state, action) => {
     return { ...state, message: action.payload.message }
-  })
-  .handleAction(fetchActivities.request, (state) => {
-    return { ...state }
   })
 
 export default reducer

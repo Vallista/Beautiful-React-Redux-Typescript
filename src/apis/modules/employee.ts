@@ -1,19 +1,28 @@
 import fetch from 'node-fetch'
+import { IEmployee } from '../../store/modules/employee/reducer'
 
-export interface IEmployee {
-  id: string
-  employee_name: string
-  employee_salary: string
-  employee_age: string
-  profile_image: string
+export interface IRequest { }
+
+export interface IResponse {
+  status: string
+  data: IEmployee[]
 }
 
-export const fetchEmployees = (): Promise<IEmployee> => {
+export interface IError {
+  message: string
+}
+
+
+const fetchEmployees = (): Promise<IResponse> => {
   return fetch('http://dummy.restapiexample.com/api/v1/employees')
     .then(res => {
       if (!res.ok) {
         throw new Error(res.statusText)
       }
-      return res.json() as Promise<IEmployee>
+      return res.json() as Promise<IResponse>
     })
+}
+
+export default {
+  fetchEmployees
 }

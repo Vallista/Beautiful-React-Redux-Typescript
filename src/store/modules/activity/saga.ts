@@ -1,17 +1,11 @@
-import { takeEvery, call, put } from 'redux-saga/effects'
+import { takeEvery } from 'redux-saga/effects'
 
-import { fetchActivities } from '../../../apis/modules/activity'
-import { FETCH_ACTIVITIES } from './reducer'
+import API from '../../../apis/modules/activity'
+import { createAsyncSaga } from '../../lib'
+import { fetch } from './reducer'
 
-function* fetch() {
-  try {
-    const activities = yield call(fetchActivities)
-    yield put({ type: FETCH_ACTIVITIES.SUCCESS, payload: { activities: activities } })
-  } catch (e) {
-    yield put({ type: FETCH_ACTIVITIES.FAILURE, payload: { message: e.message } })
-  }
-}
+const asyncFetchSaga = createAsyncSaga(fetch, API.fetchActivities)
 
 export default [
-  takeEvery(FETCH_ACTIVITIES.REQUEST, fetch)
+  takeEvery(fetch.request, asyncFetchSaga)
 ]

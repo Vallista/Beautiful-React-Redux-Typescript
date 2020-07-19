@@ -8,7 +8,7 @@ function useEmployee() {
   const employeeState = useSelector((store: RootState) => store.employee.employees)
 
   const fetchEmployees = () => {
-    dispatch(Employee.actions.fetchEmployees.request(''))
+    dispatch(Employee.actions.fetch.request(''))
   }
 
   return {
