@@ -1,16 +1,18 @@
 import { combineReducers } from 'redux'
-import employee from './employee'
 import { ForkEffect } from 'redux-saga/effects'
 
-const combineSagas = (param: { [key: string]: () => Generator<ForkEffect<never>, void, unknown> }) => function* () {
-  const targetSagas = Object.values(param)
+import employee from './employee'
+import activity from './activity'
+
+const combineSagas = (param: { [key: string]: ForkEffect<never>[] }) => function* () {
+  const targetSagas = Object.values(param).flat()
 
   for (let i = 0; i < targetSagas.length; i++) {
-    yield targetSagas[i]()
+    yield targetSagas[i]
   }
 }
 
 export default {
-  rootReducer: combineReducers({ employee: employee.reducer }),
-  rootSagas: combineSagas({ employee: employee.saga })
+  rootReducer: combineReducers({ employee: employee.reducer, activity: activity.reducer }),
+  rootSagas: combineSagas({ activity: activity.saga, employee: employee.saga })
 }
