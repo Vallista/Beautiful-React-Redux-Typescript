@@ -14,7 +14,7 @@ powered by Create-React-App
 
 ## Describes
 
-The project demonstrates how to apply React and Redux, Redux-saga, and TypeScript with simple actions to receive and output the deployee data.
+The project demonstrates how to apply React and Redux, Redux-saga, and TypeScript with simple actions to receive and output the employee data.
 
 ### src/apis
 
@@ -136,7 +136,7 @@ Bring the one that set the EMPLOYEES_FETCH_SUCCESS here and use it.
 
 1. Continuously monitors 'EMPLOYEES_FETCH_REQUEST' with takeEvery.
 2. When 'EMPLOYEES_FETCH_REQUEST' is called by dispatch, the fetch generator is started.
-3.Fetch runs and invokes the fetchEmployes function to communicate API.
+3.Fetch runs and invokes the fetchEmployees function to communicate API.
 4. After communication, check success and failure and pass on the value.
 5. Run 'EMPLOYEES_FETCH_SUCCESS' or 'EMPLOYEES_FETCH_FAILURE'.
 
