@@ -1,4 +1,4 @@
-# 1. Standard
+# 2. Modularization
 
 ## Tech Stacks
 
@@ -12,43 +12,53 @@ powered by Create-React-App
 6. node-fetch
 7. react-redux
 
-## Describes
+## What's Different from [1. Standard](https://github.com/Vallista/Beautiful-React-Redux-Typescript/tree/1.standard)
 
-The project demonstrates how to apply React and Redux, Redux-saga, and TypeScript with simple actions to receive and output the deployee data.
+What's Different from before standard project?
+
+> If you want to see the whole situation, go [here](https://github.com/Vallista/Beautiful-React-Redux-Typescript/tree/1.standard).
 
 ### src/apis
 
-**modules/employee.ts**
+**modules/activity.ts**
 
 ```ts
 import fetch from 'node-fetch'
 
-export interface IEmployee {
-  id: string
-  employee_name: string
-  employee_salary: string
-  employee_age: string
-  profile_image: string
+export interface IActivity {
+  ID: number
+  Title: string
+  DueDate: string
+  Completed: boolean
 }
 
-export const fetchEmployees = (): Promise<IEmployee> => {
-  return fetch('http://dummy.restapiexample.com/api/v1/employees')
+export const fetchActivities = (): Promise<IActivity> => {
+  return fetch('http://fakerestapi.azurewebsites.net/api/Activities')
     .then(res => {
       if (!res.ok) {
         throw new Error(res.statusText)
       }
-      return res.json() as Promise<IEmployee>
+      return res.json() as Promise<IActivity>
     })
 }
+
 ```
 
-The API contains code for asynchronous communication. For example, the example above is the code that calls up Employeees from the server.
+An API to import activity has been added. So I will call two APIs.
 
 ### src/store
 
-Store with Redux. Create and manage status and actions.
+There are many changes to the store. **The important thing is modularity**.
 
-**reducers.ts**
+**Module Structure**
+
+![2](https://github.com/Vallista/Beautiful-React-Redux-Typescript/blob/2.separation/screenshots/1.png?raw=true)
+
+Module consists of index.ts, reducer.ts, and saga.ts. After registering reducers and saga in index.ts, we will make a structure that applies to redsux without having to control it.
+
+Let's look at examples based on activity modules.
+
+**activty/reducer.ts**
 
 ```ts
 import {
@@ -56,12 +66,13 @@ import {
   createReducer,
   createAsyncAction
 } from 'typesafe-actions'
-import { IEmployee } from '../apis/modules/employee';
 
-const FETCH_EMPLOYEES = {
-  REQUEST: 'EMPLOYEES_FETCH_REQUEST',
-  SUCCESS: 'EMPLOYEES_FETCH_SUCCESS',
-  FAILURE: 'EMPLOYEES_FETCH_FAILURE'
+import { IActivity } from '../../../apis/modules/activity';
+
+export const FETCH_ACTIVITIES = {
+  REQUEST: 'FETCH_ACTIVITIES_REQUEST',
+  SUCCESS: 'FETCH_ACTIVITIES_SUCCESS',
+  FAILURE: 'FETCH_ACTIVITIES_FAILURE'
 }
 
 interface IRequest {
@@ -69,129 +80,105 @@ interface IRequest {
 }
 
 interface IResponse {
-  employees: IEmployee[]
+  activities: IActivity[]
 }
 
 interface IError {
   message: string
 }
 
-export const fetchEmployees =
-  createAsyncAction(FETCH_EMPLOYEES.REQUEST, FETCH_EMPLOYEES.SUCCESS, FETCH_EMPLOYEES.FAILURE)<IRequest, IResponse, IError>()
+export const fetchActivities = createAsyncAction(FETCH_ACTIVITIES.REQUEST, FETCH_ACTIVITIES.SUCCESS, FETCH_ACTIVITIES.FAILURE)<IRequest, IResponse, IError>()
 
 const actions = {
-  fetchEmployees
+  fetchActivities
 }
 
 type Actions = ActionType<typeof actions>
-type State = { employees: IEmployee[], message: string }
+type State = { activities: IActivity[], message: string }
 
-const initialState: State = { employees: [], message: '' }
+const initialState: State = { activities: [], message: '' }
 
 const reducer = createReducer<State, Actions>(initialState)
-  .handleAction(fetchEmployees.success, (state, action) => {
-    return { ...state, employees: action.payload.employees }
+  .handleAction(fetchActivities.success, (state, action) => {
+    return { ...state, activities: action.payload.activities }
   })
-  .handleAction(fetchEmployees.failure, (state, action) => {
+  .handleAction(fetchActivities.failure, (state, action) => {
     return { ...state, message: action.payload.message }
   })
-  .handleAction(fetchEmployees.request, (state) => {
+  .handleAction(fetchActivities.request, (state) => {
     return { ...state }
   })
 
 export default reducer
 ```
 
-Reducer has a logic that changes the current state to a new state. Reducer is the one that executes the action and changes the internal state. To create this reductor, action and logic to generate status are included together.
-
-In the example, typesafe-action was used. typesafe-action is a module that makes it more convenient to use when generating action in type scripts.
-
-When you create an asynchronous action, you must have three states: Request, Success, and Failure. That's why FETCH_EMPLOYES has REQUEST, SUCCESS, and FAILURE.
-
-Each of these three names is held because you need to set a unique name so that you can recognize what events are coming from the reducers and saga.
-
-**sagas.ts**
+**activity/saga.ts**
 
 ```ts
 import { takeEvery, call, put } from 'redux-saga/effects'
 
-import { fetchEmployees } from '../apis/modules/employee'
+import { fetchActivities } from '../../../apis/modules/activity'
+import { FETCH_ACTIVITIES } from './reducer'
 
 function* fetch() {
   try {
-    const employees = yield call(fetchEmployees)
-    yield put({ type: 'EMPLOYEES_FETCH_SUCCESS', payload: { employees: employees.data } })
+    const activities = yield call(fetchActivities)
+    yield put({ type: FETCH_ACTIVITIES.SUCCESS, payload: { activities: activities } })
   } catch (e) {
-    yield put({ type: 'EMPLOYEES_FETCH_FAILURE', payload: { message: e.message } })
+    yield put({ type: FETCH_ACTIVITIES.FAILURE, payload: { message: e.message } })
   }
 }
 
-export default function* sagas() {
-  yield takeEvery("EMPLOYEES_FETCH_REQUEST", fetch)
-}
+export default [
+  takeEvery(FETCH_ACTIVITIES.REQUEST, fetch)
+]
 ```
-Saga brings and uses functions created by API.
 
-Bring the one that set the EMPLOYEES_FETCH_SUCCESS here and use it.
+The reducers and saga are no different from existing modules.
 
-1. Continuously monitors 'EMPLOYEES_FETCH_REQUEST' with takeEvery.
-2. When 'EMPLOYEES_FETCH_REQUEST' is called by dispatch, the fetch generator is started.
-3.Fetch runs and invokes the fetchEmployes function to communicate API.
-4. After communication, check success and failure and pass on the value.
-5. Run 'EMPLOYEES_FETCH_SUCCESS' or 'EMPLOYEES_FETCH_FAILURE'.
-
-**index.ts**
+**activity/index.ts**
 
 ```ts
-import { applyMiddleware, createStore } from 'redux'
-import createSagaMiddleware from 'redux-saga'
+import reducer from './reducer'
+import saga from './saga'
 
-import sagas from './sagas'
-import reducers from './reducers'
+import * as actions from './reducer'
 
-const sagaMiddleware = createSagaMiddleware()
-
-export type RootState = ReturnType<typeof reducers>
-
-const store = createStore(reducers, applyMiddleware(sagaMiddleware))
-
-sagaMiddleware.run(sagas)
-
-export default store
-
+export default {
+  reducer,
+  saga,
+  actions
+}
 ```
 
-`index.ts` sets the store and executes saga middleware.
+index.ts combines reducers and saga, and registers actions for external use. Let's see how you convert these modules to rootReducher and rootSagas.
 
-### src/hooks
-
-**useEmployee.tsx**
+**modules/index.ts**
 
 ```tsx
-import { useSelector, useDispatch } from 'react-redux'
-import * as actions from '../../store/reducers'
-import { RootState } from '../../store'
+import { combineReducers } from 'redux'
+import { ForkEffect } from 'redux-saga/effects'
 
-function useEmployee() {
-  const dispatch = useDispatch()
-  const employeeState = useSelector((store: RootState) => store.employees)
+import employee from './employee'
+import activity from './activity'
 
-  const fetchEmployees = () => {
-    dispatch(actions.fetchEmployees.request(''))
-  }
+const combineSagas = (param: { [key: string]: ForkEffect<never>[] }) => function* () {
+  const targetSagas = Object.values(param).flat()
 
-  return {
-    employeeState,
-    fetchEmployees
+  for (let i = 0; i < targetSagas.length; i++) {
+    yield targetSagas[i]
   }
 }
 
-export default useEmployee
+export default {
+  rootReducer: combineReducers({ employee: employee.reducer, activity: activity.reducer }),
+  rootSagas: combineSagas({ activity: activity.saga, employee: employee.saga })
+}
 ```
 
-`react-redux` makes it easy to implement in hooks for easy binding of react and redux. These hooks are called `controllers-views` in Flux.
+Modules/index.ts serves to combine multiple modules. This connection allows you to resolve the redux at the module level without having to change its settings.
 
-Use Selector and Dispatch to request actions and status in real time or to receive changed results. It returns its status and action as a return value.
+The important part here is the computerSagas, which is similar to the computer. As you can see from the code above, saga.ts is delivering saga in array form. If you do this, saga can easily watch the event.
 
 ### src/pages
 
@@ -201,23 +188,29 @@ Use Selector and Dispatch to request actions and status in real time or to recei
 import React, { useEffect } from 'react'
 
 import useEmployee from '../../hooks/useEmployee'
+import useActivity from '../../hooks/useActivity'
 
 import Employee from '../../components/Employee'
+import Activity from '../../components/Activity'
 
 const Home: React.FC = () => {
   const { employeeState, fetchEmployees } = useEmployee()
+  const { activities, fetchActivities } = useActivity()
 
   useEffect(() => {
     fetchEmployees()
+    fetchActivities()
   }, [])
 
   return <div>
     Home!
     {employeeState.map((employee, index) => <Employee {...employee} key={index} />)}
+    <hr />
+    {activities.map((activity, index) => <Activity {...activity} key={index} />)}
   </div>
 }
 
 export default Home
 ```
 
-Take the value of 'useEmployee' to custom hooks and sprinkle it. Then, `fetchEmployee` is performed for the first time with useEffect.
+Likewise, hooks add useActivity like useEmployee and register the fetch event with useEffect.
