@@ -1,15 +1,13 @@
 import { applyMiddleware, createStore } from 'redux'
 import createSagaMiddleware from 'redux-saga'
 
-import sagas from './sagas'
-import reducers from './reducers'
+import modules from './modules'
 
 const sagaMiddleware = createSagaMiddleware()
-
-export type RootState = ReturnType<typeof reducers>
-
-const store = createStore(reducers, applyMiddleware(sagaMiddleware))
-
-sagaMiddleware.run(sagas)
+const store = createStore(modules.rootReducer, applyMiddleware(sagaMiddleware))
 
 export default store
+
+sagaMiddleware.run(modules.rootSagas)
+
+export type RootState = ReturnType<typeof modules.rootReducer>
