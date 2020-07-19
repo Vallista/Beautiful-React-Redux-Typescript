@@ -5,7 +5,7 @@ import {
 } from 'typesafe-actions'
 import { IEmployee } from '../../../apis/modules/employee';
 
-const FETCH_EMPLOYEES = {
+export const FETCH_EMPLOYEES = {
   REQUEST: 'EMPLOYEES_FETCH_REQUEST',
   SUCCESS: 'EMPLOYEES_FETCH_SUCCESS',
   FAILURE: 'EMPLOYEES_FETCH_FAILURE'
