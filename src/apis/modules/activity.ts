@@ -8,7 +8,6 @@ export interface IActivity {
 }
 
 export const fetchActivities = (): Promise<IActivity> => {
-  console.log('1')
   return fetch('http://fakerestapi.azurewebsites.net/api/Activities')
     .then(res => {
       if (!res.ok) {
