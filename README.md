@@ -10,7 +10,7 @@ Please read it in the order below.
 
 By default, this section describes how to draw layouts over network communication using React, Redux, Redux saga and TypeScript.
 
-### [2. Separation](https://github.com/Vallista/Beautiful-React-Redux-Typescript/tree/2.separation)
+### [2. Modularization](https://github.com/Vallista/Beautiful-React-Redux-Typescript/tree/2.modularization)
 
 Learn how to divide reducers and saga into domain units.
 
