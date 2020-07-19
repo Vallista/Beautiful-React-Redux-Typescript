@@ -1,7 +1,7 @@
 import { combineReducers } from 'redux'
 import { ForkEffect } from 'redux-saga/effects'
 
-import employee from './employee2'
+import employee from './employee'
 import activity from './activity'
 
 const combineSagas = (param: { [key: string]: ForkEffect<never>[] }) => function* () {
